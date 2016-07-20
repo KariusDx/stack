@@ -48,6 +48,11 @@ variable "command" {
   default     = "[]"
 }
 
+variable "entry_point" {
+  description = "The docker container entry point"
+  default     = "[]"
+}
+
 variable "env_vars" {
   description = "The raw json of the task env vars"
   default     = "[]"
@@ -90,6 +95,7 @@ module "task" {
   image         = "${var.image}"
   image_version = "${var.version}"
   command       = "${var.command}"
+  entry_point   = "${var.entry_point}"
   env_vars      = "${var.env_vars}"
   memory        = "${var.memory}"
   cpu           = "${var.cpu}"
