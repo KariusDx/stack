@@ -120,6 +120,11 @@ variable "cpu" {
   default     = 512
 }
 
+variable "logDriver" {
+  description = "The ECS logDriver"
+  default     = "journald"
+}
+
 /**
  * Resources.
  */
@@ -152,6 +157,7 @@ module "task" {
   env_vars      = "${var.env_vars}"
   memory        = "${var.memory}"
   cpu           = "${var.cpu}"
+  logDriver     = "${var.logDriver}"
 
   ports = <<EOF
   [

@@ -62,6 +62,24 @@ variable "memory" {
   default     = 512
 }
 
+variable "logDriver" {
+  description = "The ECS logDriver"
+  default     = "journald"
+}
+
+# default to mounting /tmp
+variable "mountPoints" {
+  description = "mount points json array"
+  default     = <<EOF
+[
+  { "sourceVolume":"tmp"
+  , "containerPath":"/tmp"
+  , "readOnly": false
+  }
+]
+EOF
+}
+
 /**
  * Resources.
  */
@@ -70,6 +88,12 @@ variable "memory" {
 
 resource "aws_ecs_task_definition" "main" {
   family = "${var.name}"
+
+  # I don't know how to turn this one into a passed in variable yet
+  volume {
+    name = "tmp"
+    host_path = "/tmp"
+  }
 
   lifecycle {
     ignore_changes        = ["image"]
@@ -88,9 +112,9 @@ resource "aws_ecs_task_definition" "main" {
     "name": "${var.name}",
     "portMappings": ${var.ports},
     "entryPoint": ${var.entry_point},
-    "mountPoints": [],
+    "mountPoints": ${var.mountPoints},
     "logConfiguration": {
-      "logDriver": "journald",
+      "logDriver": "${var.logDriver}",
       "options": {
         "tag": "${var.name}"
       }
