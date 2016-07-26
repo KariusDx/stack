@@ -125,6 +125,17 @@ variable "logDriver" {
   default     = "journald"
 }
 
+variable "deployment_maximum_percent" {
+  description = "The maximum capacity increase during deployment"
+  default = 200
+}
+
+variable "deployment_minimum_healthy_percent" {
+  description = "The minimum capacity during deployment"
+  default = 100
+}
+
+
 /**
  * Resources.
  */
@@ -145,6 +156,9 @@ resource "aws_ecs_service" "main" {
   lifecycle {
     create_before_destroy = true
   }
+
+  deployment_maximum_percent = "${var.deployment_maximum_percent}"
+  deployment_minimum_healthy_percent = "${var.deployment_minimum_healthy_percent}"
 }
 
 module "task" {

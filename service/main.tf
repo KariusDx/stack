@@ -111,6 +111,16 @@ variable "zone_id" {
   description = "The zone ID to create the record in"
 }
 
+variable "deployment_maximum_percent" {
+  description = "The zone ID to create the record in"
+  default = 200
+}
+
+variable "deployment_minimum_healthy_percent" {
+  description = "The zone ID to create the record in"
+  default = 100
+}
+
 /**
  * Resources.
  */
@@ -131,6 +141,9 @@ resource "aws_ecs_service" "main" {
   lifecycle {
     create_before_destroy = true
   }
+
+  deployment_maximum_percent = "${var.deployment_maximum_percent}"
+  deployment_minimum_healthy_percent = "${var.deployment_minimum_healthy_percent}"
 }
 
 module "task" {
