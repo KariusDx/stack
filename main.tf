@@ -143,6 +143,7 @@ module "vpc" {
   external_subnets   = "${var.external_subnets}"
   availability_zones = "${var.availability_zones}"
   environment        = "${var.environment}"
+  stack_name         = "${var.name}"
 }
 
 module "security_groups" {
@@ -151,6 +152,7 @@ module "security_groups" {
   vpc_id      = "${module.vpc.id}"
   environment = "${var.environment}"
   cidr        = "${var.cidr}"
+  stack_name  = "${var.name}"
 }
 
 module "bastion" {
@@ -162,6 +164,7 @@ module "bastion" {
   subnet_id       = "${element(split(",",module.vpc.external_subnets), 0)}"
   key_name        = "${var.key_name}"
   environment     = "${var.environment}"
+  stack_name      = "${var.name}"
 }
 
 module "dhcp" {
@@ -204,6 +207,7 @@ module "ecs_cluster" {
   docker_auth_type       = "${var.ecs_docker_auth_type}"
   docker_auth_data       = "${var.ecs_docker_auth_data}"
   security_groups        = "${coalesce(var.ecs_security_groups, format("%s,%s,%s", module.security_groups.internal_ssh, module.security_groups.internal_elb, module.security_groups.external_elb))}"
+  stack_name             = "${var.name}"
 }
 
 module "s3_logs" {
@@ -211,6 +215,7 @@ module "s3_logs" {
   name        = "${var.name}"
   environment = "${var.environment}"
   account_id  = "${module.defaults.s3_logs_account_id}"
+  stack_name  = "${var.name}"
 }
 
 // The region in which the infra lives.

@@ -18,6 +18,12 @@ variable "cidr" {
   description = "The cidr block to use for internal security groups"
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
+
 resource "aws_security_group" "internal_elb" {
   name        = "${format("%s-%s-internal-elb", var.name, var.environment)}"
   vpc_id      = "${var.vpc_id}"
@@ -44,6 +50,7 @@ resource "aws_security_group" "internal_elb" {
   tags {
     Name        = "${format("%s internal elb", var.name)}"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 
@@ -80,6 +87,7 @@ resource "aws_security_group" "external_elb" {
   tags {
     Name        = "${format("%s external elb", var.name)}"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 
@@ -109,6 +117,7 @@ resource "aws_security_group" "external_ssh" {
   tags {
     Name        = "${format("%s external ssh", var.name)}"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 
@@ -138,6 +147,7 @@ resource "aws_security_group" "internal_ssh" {
   tags {
     Name        = "${format("%s internal ssh", var.name)}"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 

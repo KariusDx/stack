@@ -50,6 +50,12 @@ variable "environment" {
   description = "Environment tag, e.g prod"
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
+
 module "ami" {
   source        = "github.com/terraform-community-modules/tf_aws_ubuntu_ami/ebs"
   region        = "${var.region}"
@@ -70,6 +76,7 @@ resource "aws_instance" "bastion" {
   tags {
     Name        = "bastion"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 

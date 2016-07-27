@@ -114,6 +114,11 @@ variable "docker_auth_data" {
   default     = ""
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
 resource "aws_security_group" "cluster" {
   name        = "${var.name}-ecs-cluster"
   vpc_id      = "${var.vpc_id}"
@@ -136,6 +141,7 @@ resource "aws_security_group" "cluster" {
   tags {
     Name        = "ECS cluster (${var.name})"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 
   lifecycle {

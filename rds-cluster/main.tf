@@ -73,6 +73,11 @@ variable "port" {
   default     = 3306
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
 resource "aws_security_group" "main" {
   name        = "${var.name}-rds-cluster"
   description = "Allows traffic to rds from other security groups"
@@ -95,6 +100,7 @@ resource "aws_security_group" "main" {
   tags {
     Name        = "RDS cluster (${var.name})"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 

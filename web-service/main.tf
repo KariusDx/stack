@@ -135,6 +135,11 @@ variable "deployment_minimum_healthy_percent" {
   default = 100
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
 
 /**
  * Resources.
@@ -198,6 +203,7 @@ module "elb" {
   security_groups    = "${var.security_groups}"
   log_bucket         = "${var.log_bucket}"
   ssl_certificate_id = "${var.ssl_certificate_id}"
+  stack_name         = "${var.stack_name}"
 }
 
 /**

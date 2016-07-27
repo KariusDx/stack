@@ -44,6 +44,12 @@ variable "log_bucket" {
   description = "S3 bucket name to write ELB logs into"
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
+
 /**
  * Resources.
  */
@@ -83,6 +89,7 @@ resource "aws_elb" "main" {
     Name        = "${var.name}-balancer"
     Service     = "${var.name}"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 

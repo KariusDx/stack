@@ -7,6 +7,12 @@ variable "environment" {
 variable "account_id" {
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
+
 resource "template_file" "policy" {
   template = "${file("${path.module}/policy.json")}"
 
@@ -22,6 +28,7 @@ resource "aws_s3_bucket" "logs" {
   tags {
     Name        = "${var.name}-${var.environment}-logs"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 
   policy = "${template_file.policy.rendered}"

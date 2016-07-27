@@ -23,6 +23,11 @@ variable "name" {
   default     = "stack"
 }
 
+variable "stack_name" {
+  description = "stack name to use as the value for the Terraform tag"
+  default     = ""
+}
+
 /**
  * VPC
  */
@@ -35,6 +40,7 @@ resource "aws_vpc" "main" {
   tags {
     Name        = "${var.name}"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 
@@ -48,6 +54,7 @@ resource "aws_internet_gateway" "main" {
   tags {
     Name        = "${var.name}"
     Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
   }
 }
 
@@ -75,6 +82,7 @@ resource "aws_subnet" "internal" {
 
   tags {
     Name = "${var.name}-${format("internal-%03d", count.index+1)}"
+    Terraform = "${var.stack_name}"
   }
 }
 
@@ -87,6 +95,7 @@ resource "aws_subnet" "external" {
 
   tags {
     Name = "${var.name}-${format("external-%03d", count.index+1)}"
+    Terraform = "${var.stack_name}"
   }
 }
 
@@ -104,6 +113,7 @@ resource "aws_route_table" "external" {
 
   tags {
     Name = "${var.name}-external-001"
+    Terraform = "${var.stack_name}"
   }
 }
 
@@ -118,6 +128,7 @@ resource "aws_route_table" "internal" {
 
   tags {
     Name = "${var.name}-${format("internal-%03d", count.index+1)}"
+    Terraform = "${var.stack_name}"
   }
 }
 
