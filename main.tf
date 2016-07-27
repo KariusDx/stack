@@ -268,6 +268,11 @@ output "environment" {
   value = "${var.environment}"
 }
 
+// The stack name
+output "name" {
+  value = "${var.name}"
+}
+
 // The default ECS cluster name.
 output "cluster" {
   value = "${module.ecs_cluster.name}"
