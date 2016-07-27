@@ -18,6 +18,18 @@ variable "cidr" {
   description = "The cidr block to use for internal security groups"
 }
 
+variable "external_http_security_groups" {
+  description = "A comma separated list of security groups to use to restrict the external security groups."
+}
+
+variable "external_http_cidr" {
+  description = "cidr http."
+}
+
+variable "external_ssh_security_groups" {
+  description = "A comma separated list of security groups to use to restrict the external security groups."
+}
+
 variable "stack_name" {
   description = "stack name to use as the value for the Terraform tag"
   default     = ""
@@ -63,14 +75,28 @@ resource "aws_security_group" "external_elb" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${split(",", var.external_http_security_groups)}"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${split(",", var.external_http_security_groups)}"]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["${split(",", var.external_http_cidr)}"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["${split(",", var.external_http_cidr)}"]
   }
 
   egress {
@@ -100,14 +126,14 @@ resource "aws_security_group" "external_ssh" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${split(",", var.external_ssh_security_groups)}"]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = ["${split(",", var.external_ssh_security_groups)}"]
   }
 
   lifecycle {

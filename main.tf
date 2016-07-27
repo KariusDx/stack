@@ -45,6 +45,18 @@ variable "cidr" {
   default     = "10.30.0.0/16"
 }
 
+variable "external_http_security_groups" {
+  description = "A comma separated list of security groups to use to restrict external security groups."
+}
+
+variable "external_http_cidr" {
+  description = "cidr http access. Set to 0.0.0.0/0 to open to the world."
+}
+
+variable "external_ssh_security_groups" {
+  description = "A comma separated list of security groups to use to restrict external security groups."
+}
+
 variable "internal_subnets" {
   description = "a comma-separated list of CIDRs for internal subnets in your VPC, must be set if the cidr variable is defined, needs to have as many elements as there are availability zones"
   default     = "10.30.0.0/19,10.30.64.0/19,10.30.128.0/19"
@@ -153,6 +165,9 @@ module "security_groups" {
   environment = "${var.environment}"
   cidr        = "${var.cidr}"
   stack_name  = "${var.name}"
+  external_ssh_security_groups = "${var.external_ssh_security_groups}"
+  external_http_security_groups = "${var.external_http_security_groups}"
+  external_http_cidr = "${var.external_http_cidr}"
 }
 
 module "bastion" {
