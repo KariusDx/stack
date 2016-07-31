@@ -18,16 +18,19 @@ variable "cidr" {
   description = "The cidr block to use for internal security groups"
 }
 
-variable "external_http_security_groups" {
-  description = "A comma separated list of security groups to use to restrict the external security groups."
+variable "external_security_group" {
+  description = "Use this security group for ssh and http external access. Set this or external_ssh_security_group and external_http_security_group"
+  default     = ""
 }
 
-variable "external_http_cidr" {
-  description = "cidr http."
+variable "external_ssh_security_group" {
+  description = "Use this security group for external ssh access."
+  default     = ""
 }
 
-variable "external_ssh_security_groups" {
-  description = "A comma separated list of security groups to use to restrict the external security groups."
+variable "external_http_security_group" {
+  description = "Use this security group for external http access."
+  default     = ""
 }
 
 variable "stack_name" {
@@ -66,87 +69,6 @@ resource "aws_security_group" "internal_elb" {
   }
 }
 
-resource "aws_security_group" "external_elb" {
-  name        = "${format("%s-%s-external-elb", var.name, var.environment)}"
-  vpc_id      = "${var.vpc_id}"
-  description = "Allows internal ELB traffic"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    security_groups = ["${split(",", var.external_http_security_groups)}"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    security_groups = ["${split(",", var.external_http_security_groups)}"]
-  }
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["${split(",", var.external_http_cidr)}"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["${split(",", var.external_http_cidr)}"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = -1
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags {
-    Name        = "${format("%s external elb", var.name)}"
-    Environment = "${var.environment}"
-    Terraform   = "${var.stack_name}"
-  }
-}
-
-resource "aws_security_group" "external_ssh" {
-  name        = "${format("%s-%s-external-ssh", var.name, var.environment)}"
-  description = "Allows ssh from the world"
-  vpc_id      = "${var.vpc_id}"
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    security_groups = ["${split(",", var.external_ssh_security_groups)}"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    security_groups = ["${split(",", var.external_ssh_security_groups)}"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
-  tags {
-    Name        = "${format("%s external ssh", var.name)}"
-    Environment = "${var.environment}"
-    Terraform   = "${var.stack_name}"
-  }
-}
-
 resource "aws_security_group" "internal_ssh" {
   name        = "${format("%s-%s-internal-ssh", var.name, var.environment)}"
   description = "Allows ssh from bastion"
@@ -156,7 +78,7 @@ resource "aws_security_group" "internal_ssh" {
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.external_ssh.id}"]
+    security_groups = ["${coalesce(var.external_ssh_security_group, var.external_security_group)}"]
   }
 
   egress {
@@ -179,7 +101,7 @@ resource "aws_security_group" "internal_ssh" {
 
 // External SSH allows ssh connections on port 22 from the world.
 output "external_ssh" {
-  value = "${aws_security_group.external_ssh.id}"
+  value = "${coalesce(var.external_ssh_security_group, var.external_security_group)}"
 }
 
 // Internal SSH allows ssh connections from the external ssh security group.
@@ -194,5 +116,5 @@ output "internal_elb" {
 
 // External ELB allows traffic from the world.
 output "external_elb" {
-  value = "${aws_security_group.external_elb.id}"
+  value = "${coalesce(var.external_http_security_group, var.external_security_group)}"
 }
