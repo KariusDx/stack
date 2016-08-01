@@ -309,3 +309,7 @@ output "vpc_id" {
 output "ecs_cluster_security_group_id" {
   value = "${module.ecs_cluster.security_group_id}"
 }
+
+output "external_security_group" {
+  value = "${var.external_security_group}"
+}
