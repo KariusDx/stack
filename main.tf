@@ -71,6 +71,11 @@ variable "bastion_instance_type" {
   default = "t2.micro"
 }
 
+variable "bastion_ami_id" {
+  description = "AMI id to use for the bastion host. Defaults to a standard Ubuntu AMI."
+  default = ""
+}
+
 variable "ecs_cluster_name" {
   description = "the name of the cluster, if not specified the variable name will be used"
   default = ""
@@ -79,11 +84,6 @@ variable "ecs_cluster_name" {
 variable "ecs_instance_type" {
   description = "the instance type to use for your default ecs cluster"
   default     = "m4.large"
-}
-
-variable "ecs_instance_ebs_optimized" {
-  description = "ebs optimize or not cluster instances"
-  default     = true
 }
 
 variable "ecs_min_size" {
@@ -172,6 +172,7 @@ module "bastion" {
   key_name        = "${var.key_name}"
   environment     = "${var.environment}"
   stack_name      = "${var.name}"
+  ami_id          = "${var.bastion_ami_id}"
 }
 
 module "dhcp" {
@@ -191,30 +192,6 @@ module "iam_role" {
   source      = "./iam-role"
   name        = "${var.name}"
   environment = "${var.environment}"
-}
-
-module "ecs_cluster" {
-  source                 = "./ecs-cluster"
-  name                   = "${coalesce(var.ecs_cluster_name, var.name)}"
-  environment            = "${var.environment}"
-  vpc_id                 = "${module.vpc.id}"
-  image_id               = "${coalesce(var.ecs_ami, module.defaults.ecs_ami)}"
-  subnet_ids             = "${module.vpc.internal_subnets}"
-  key_name               = "${var.key_name}"
-  instance_type          = "${var.ecs_instance_type}"
-  instance_ebs_optimized = "${var.ecs_instance_ebs_optimized}"
-  iam_instance_profile   = "${module.iam_role.profile}"
-  min_size               = "${var.ecs_min_size}"
-  max_size               = "${var.ecs_max_size}"
-  desired_capacity       = "${var.ecs_desired_capacity}"
-  region                 = "${var.region}"
-  availability_zones     = "${module.vpc.availability_zones}"
-  root_volume_size       = "${var.ecs_root_volume_size}"
-  docker_volume_size     = "${var.ecs_docker_volume_size}"
-  docker_auth_type       = "${var.ecs_docker_auth_type}"
-  docker_auth_data       = "${var.ecs_docker_auth_data}"
-  security_groups        = "${coalesce(var.ecs_security_groups, format("%s,%s,%s", module.security_groups.internal_ssh, module.security_groups.internal_elb, module.security_groups.external_elb))}"
-  stack_name             = "${var.name}"
 }
 
 module "s3_logs" {
@@ -285,11 +262,6 @@ output "name" {
   value = "${var.name}"
 }
 
-// The default ECS cluster name.
-output "cluster" {
-  value = "${module.ecs_cluster.name}"
-}
-
 // The VPC availability zones.
 output "availability_zones" {
   value = "${module.vpc.availability_zones}"
@@ -303,11 +275,6 @@ output "vpc_security_group" {
 // The VPC ID.
 output "vpc_id" {
   value = "${module.vpc.id}"
-}
-
-// The default ECS cluster security group ID.
-output "ecs_cluster_security_group_id" {
-  value = "${module.ecs_cluster.security_group_id}"
 }
 
 output "external_security_group" {
