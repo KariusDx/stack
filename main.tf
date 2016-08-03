@@ -130,11 +130,6 @@ variable "ecs_security_groups" {
   default     = ""
 }
 
-variable "ecs_ami" {
-  description = "The AMI that will be used to launch EC2 instances in the ECS cluster"
-  default     = ""
-}
-
 module "defaults" {
   source = "./defaults"
   region = "${var.region}"
@@ -227,6 +222,10 @@ output "external_elb" {
   value = "${module.security_groups.external_elb}"
 }
 
+output "internal_ssh" {
+  value = "${module.security_groups.internal_ssh}"
+}
+
 // Comma separated list of internal subnet IDs.
 output "internal_subnets" {
   value = "${module.vpc.internal_subnets}"
@@ -240,6 +239,10 @@ output "external_subnets" {
 // ECS Service IAM role.
 output "iam_role" {
   value = "${module.iam_role.arn}"
+}
+
+output "iam_role_profile" {
+  value = "${module.iam_role.profile}"
 }
 
 // S3 bucket ID for ELB logs.
@@ -279,4 +282,8 @@ output "vpc_id" {
 
 output "external_security_group" {
   value = "${var.external_security_group}"
+}
+
+output "ecs_ami" {
+  value = "${module.defaults.ecs_ami}"
 }
