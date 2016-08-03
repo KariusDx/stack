@@ -55,6 +55,11 @@ variable "stack_name" {
   default     = ""
 }
 
+variable "ami_id" {
+  description = "ami id to use for the bastion host"
+  default     = ""
+}
+
 
 module "ami" {
   source        = "github.com/terraform-community-modules/tf_aws_ubuntu_ami/ebs"
@@ -64,7 +69,7 @@ module "ami" {
 }
 
 resource "aws_instance" "bastion" {
-  ami                    = "${module.ami.ami_id}"
+  ami                    = "${coalesce(var.ami_id, module.ami.ami_id)}"
   source_dest_check      = false
   instance_type          = "${var.instance_type}"
   subnet_id              = "${var.subnet_id}"
