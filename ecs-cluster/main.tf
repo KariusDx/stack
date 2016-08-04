@@ -366,6 +366,10 @@ output "name" {
   value = "${var.name}"
 }
 
+output "autoscaling_group_name" {
+  value = "${aws_autoscaling_group.main.name}"
+}
+
 // The cluster security group ID.
 output "security_group_id" {
   value = "${aws_security_group.cluster.id}"

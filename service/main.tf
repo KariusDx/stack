@@ -125,25 +125,26 @@ variable "deployment_minimum_healthy_percent" {
  * Resources.
  */
 
-resource "aws_ecs_service" "main" {
-  name            = "${module.task.name}"
-  cluster         = "${var.cluster}"
-  task_definition = "${module.task.arn}"
-  desired_count   = "${var.desired_count}"
-  iam_role        = "${var.iam_role}"
-
-  load_balancer {
-    elb_name       = "${module.elb.id}"
-    container_name = "${module.task.name}"
-    container_port = "${var.container_port}"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
+module "ecs_service" {
+  source = "../ecs/service"
+  environment = "${var.environment}"
+  name = "${var.name}"
+  subnet_ids = "${var.subnet_ids}"
+  security_groups = "${var.security_groups}"
+  port = "${var.port}"
+  cluster = "${var.cluster}"
+  dns_name = "${var.dns_name}"
+  log_bucket = "${var.log_bucket}"
+  healthcheck = "${var.healthcheck}"
+  container_port = "${var.container_port}"
+  desired_count = "${var.desired_count}"
+  protocol = "${var.protocol}"
+  iam_role = "${var.iam_role}"
+  zone_id = "${var.zone_id}"
   deployment_maximum_percent = "${var.deployment_maximum_percent}"
   deployment_minimum_healthy_percent = "${var.deployment_minimum_healthy_percent}"
+  task_name = "${module.task.name}"
+  task_arn  = "${module.task.arn}"
 }
 
 module "task" {
@@ -167,46 +168,27 @@ module "task" {
 EOF
 }
 
-module "elb" {
-  source = "../elb"
-
-  name            = "${module.task.name}"
-  port            = "${var.port}"
-  environment     = "${var.environment}"
-  subnet_ids      = "${var.subnet_ids}"
-  security_groups = "${var.security_groups}"
-  dns_name        = "${coalesce(var.dns_name, module.task.name)}"
-  healthcheck     = "${var.healthcheck}"
-  protocol        = "${var.protocol}"
-  zone_id         = "${var.zone_id}"
-  log_bucket      = "${var.log_bucket}"
-}
-
-/**
- * Outputs.
- */
-
 // The name of the ELB
 output "name" {
-  value = "${module.elb.name}"
+  value = "${module.ecs_service.elb_name}"
 }
 
 // The DNS name of the ELB
 output "dns" {
-  value = "${module.elb.dns}"
+  value = "${module.ecs_service.elb.dns}"
 }
 
 // The id of the ELB
 output "elb" {
-  value = "${module.elb.id}"
+  value = "${module.ecs_service.elb_id}"
 }
 
 // The zone id of the ELB
 output "zone_id" {
-  value = "${module.elb.zone_id}"
+  value = "${module.ecs_service.elb_zone_id}"
 }
 
 // FQDN built using the zone domain and name
 output "fqdn" {
-  value = "${module.elb.fqdn}"
+  value = "${module.ecs_service.elb_fqdn}"
 }

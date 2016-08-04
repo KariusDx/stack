@@ -141,29 +141,29 @@ variable "stack_name" {
 }
 
 
-/**
- * Resources.
- */
-
-resource "aws_ecs_service" "main" {
-  name            = "${module.task.name}"
-  cluster         = "${var.cluster}"
-  task_definition = "${module.task.arn}"
-  desired_count   = "${var.desired_count}"
-  iam_role        = "${var.iam_role}"
-
-  load_balancer {
-    elb_name       = "${module.elb.id}"
-    container_name = "${module.task.name}"
-    container_port = "${var.container_port}"
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
+module "ecs_web_service" {
+  source = "../ecs/web-service"
+  environment = "${var.environment}"
+  subnet_ids = "${var.subnet_ids}"
+  security_groups = "${var.security_groups}"
+  port = "${var.port}"
+  cluster = "${var.cluster}"
+  log_bucket = "${var.log_bucket}"
+  ssl_certificate_id = "${var.ssl_certificate_id}"
+  iam_role = "${var.iam_role}"
+  external_dns_name = "${var.external_dns_name}"
+  internal_dns_name = "${var.internal_dns_name}"
+  external_zone_id = "${var.external_zone_id}"
+  internal_zone_id = "${var.internal_zone_id}"
+  healthcheck = "${var.healthcheck}"
+  container_port = "${var.container_port}"
+  desired_count = "${var.desired_count}"
   deployment_maximum_percent = "${var.deployment_maximum_percent}"
   deployment_minimum_healthy_percent = "${var.deployment_minimum_healthy_percent}"
+  stack_name = "${var.stack_name}"
+  task_name = "${module.task.name}"
+  task_arn  = "${module.task.arn}"
+  security_groups = "${var.security_groups}"
 }
 
 module "task" {
@@ -188,54 +188,36 @@ module "task" {
 EOF
 }
 
-module "elb" {
-  source = "./elb"
-
-  name               = "${module.task.name}"
-  port               = "${var.port}"
-  environment        = "${var.environment}"
-  subnet_ids         = "${var.subnet_ids}"
-  external_dns_name  = "${coalesce(var.external_dns_name, module.task.name)}"
-  internal_dns_name  = "${coalesce(var.internal_dns_name, module.task.name)}"
-  healthcheck        = "${var.healthcheck}"
-  external_zone_id   = "${var.external_zone_id}"
-  internal_zone_id   = "${var.internal_zone_id}"
-  security_groups    = "${var.security_groups}"
-  log_bucket         = "${var.log_bucket}"
-  ssl_certificate_id = "${var.ssl_certificate_id}"
-  stack_name         = "${var.stack_name}"
-}
-
 /**
  * Outputs.
  */
 
 // The name of the ELB
 output "name" {
-  value = "${module.elb.name}"
+  value = "${module.ecs_web_service.elb_name}"
 }
 
 // The DNS name of the ELB
 output "dns" {
-  value = "${module.elb.dns}"
+  value = "${module.ecs_web_service.elb_dns}"
 }
 
 // The id of the ELB
 output "elb" {
-  value = "${module.elb.id}"
+  value = "${module.ecs_web_service.elb_id}"
 }
 
 // The zone id of the ELB
 output "zone_id" {
-  value = "${module.elb.zone_id}"
+  value = "${module.ecs_web_service.elb_zone_id}"
 }
 
 // FQDN built using the zone domain and name (external)
 output "external_fqdn" {
-  value = "${module.elb.external_fqdn}"
+  value = "${module.ecs_web_service.elb_external_fqdn}"
 }
 
 // FQDN built using the zone domain and name (internal)
 output "internal_fqdn" {
-  value = "${module.elb.internal_fqdn}"
+  value = "${module.ecs_web_service.elb_internal_fqdn}"
 }
