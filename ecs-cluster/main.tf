@@ -120,9 +120,9 @@ variable "stack_name" {
 }
 
 resource "aws_security_group" "cluster" {
-  name        = "${var.name}-ecs-cluster"
+  name        = "${var.name}-${var.environment}-ecs-cluster"
   vpc_id      = "${var.vpc_id}"
-  description = "Allows traffic from and to the EC2 instances of the ${var.name} ECS cluster"
+  description = "Allows traffic from and to the EC2 instances of the ${var.name} ${var.environment} ECS cluster"
 
   ingress {
     from_port       = 0
@@ -139,7 +139,7 @@ resource "aws_security_group" "cluster" {
   }
 
   tags {
-    Name        = "ECS cluster (${var.name})"
+    Name        = "ECS cluster (${var.name} ${var.environment})"
     Environment = "${var.environment}"
     Terraform   = "${var.stack_name}"
   }
@@ -150,7 +150,7 @@ resource "aws_security_group" "cluster" {
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "${var.name}"
+  name = "${var.name}-${var.environment}"
 
   lifecycle {
     create_before_destroy = true
@@ -162,7 +162,7 @@ resource "template_file" "cloud_config" {
 
   vars {
     environment      = "${var.environment}"
-    name             = "${var.name}"
+    name             = "${var.name}-${var.environment}"
     region           = "${var.region}"
     docker_auth_type = "${var.docker_auth_type}"
     docker_auth_data = "${var.docker_auth_data}"
@@ -174,7 +174,7 @@ resource "template_file" "cloud_config" {
 }
 
 resource "aws_launch_configuration" "main" {
-  name_prefix = "${format("%s-", var.name)}"
+  name_prefix = "${format("%s-%s-", var.name, var.environment)}"
 
   image_id                    = "${var.image_id}"
   instance_type               = "${var.instance_type}"
@@ -204,7 +204,7 @@ resource "aws_launch_configuration" "main" {
 }
 
 resource "aws_autoscaling_group" "main" {
-  name = "${var.name}"
+  name = "${var.name}-${var.environment}"
 
   availability_zones   = ["${split(",", var.availability_zones)}"]
   vpc_zone_identifier  = ["${split(",", var.subnet_ids)}"]
@@ -222,7 +222,7 @@ resource "aws_autoscaling_group" "main" {
 
   tag {
     key                 = "Cluster"
-    value               = "${var.name}"
+    value               = "${var.name} ${var.environment}"
     propagate_at_launch = true
   }
 
@@ -238,7 +238,7 @@ resource "aws_autoscaling_group" "main" {
 }
 
 resource "aws_autoscaling_policy" "scale_up" {
-  name                   = "${var.name}-scaleup"
+  name                   = "${var.name}-${var.environment}-scaleup"
   scaling_adjustment     = 1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
@@ -250,7 +250,7 @@ resource "aws_autoscaling_policy" "scale_up" {
 }
 
 resource "aws_autoscaling_policy" "scale_down" {
-  name                   = "${var.name}-scaledown"
+  name                   = "${var.name}-${var.environment}-scaledown"
   scaling_adjustment     = -1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
@@ -262,7 +262,7 @@ resource "aws_autoscaling_policy" "scale_down" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
-  alarm_name          = "${var.name}-cpureservation-high"
+  alarm_name          = "${var.name}-${var.environment}-cpureservation-high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUReservation"
@@ -284,7 +284,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "memory_high" {
-  alarm_name          = "${var.name}-memoryreservation-high"
+  alarm_name          = "${var.name}-${var.environment}-memoryreservation-high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "MemoryReservation"
@@ -310,7 +310,7 @@ resource "aws_cloudwatch_metric_alarm" "memory_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "cpu_low" {
-  alarm_name          = "${var.name}-cpureservation-low"
+  alarm_name          = "${var.name}-${var.environment}-cpureservation-low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUReservation"
@@ -336,7 +336,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_low" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "memory_low" {
-  alarm_name          = "${var.name}-memoryreservation-low"
+  alarm_name          = "${var.name}-${var.environment}-memoryreservation-low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "MemoryReservation"
@@ -361,9 +361,9 @@ resource "aws_cloudwatch_metric_alarm" "memory_low" {
   depends_on = ["aws_cloudwatch_metric_alarm.cpu_low"]
 }
 
-// The cluster name, e.g cdn
+// The cluster name, e.g cdn-prod
 output "name" {
-  value = "${var.name}"
+  value = "${aws_ecs_cluster.main.name}"
 }
 
 output "autoscaling_group_name" {
