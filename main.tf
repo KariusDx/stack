@@ -183,12 +183,6 @@ module "dns" {
   vpc_id = "${module.vpc.id}"
 }
 
-module "iam_role" {
-  source      = "./iam-role"
-  name        = "${var.name}"
-  environment = "${var.environment}"
-}
-
 module "s3_logs" {
   source      = "./s3-logs"
   name        = "${var.name}"
@@ -234,15 +228,6 @@ output "internal_subnets" {
 // Comma separated list of external subnet IDs.
 output "external_subnets" {
   value = "${module.vpc.external_subnets}"
-}
-
-// ECS Service IAM role.
-output "iam_role" {
-  value = "${module.iam_role.arn}"
-}
-
-output "iam_role_profile" {
-  value = "${module.iam_role.profile}"
 }
 
 // S3 bucket ID for ELB logs.
