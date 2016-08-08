@@ -43,7 +43,6 @@ variable "internal_subnet_ids" {
   description = "Comma separated list of subnet IDs used by the internal ELB"
 }
 
-
 variable "security_groups" {
   description = "Comma separated list of security group IDs for the external ELB"
 }

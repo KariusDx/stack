@@ -122,7 +122,7 @@ resource "aws_route53_record" "external" {
 }
 
 module "internal_elb" {
-  source = "../../elb"
+  source = "../../elb/internal"
 
   name               = "${var.name}-internal"
   port               = "${var.port}"

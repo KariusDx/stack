@@ -121,7 +121,7 @@ resource "aws_ecs_service" "main" {
 
 
 module "elb" {
-  source = "../../web-service/elb"
+  source = "../../elb/double"
 
   name               = "${var.task_name}"
   port               = "${var.port}"

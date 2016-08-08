@@ -130,7 +130,7 @@ resource "aws_ecs_service" "main" {
 }
 
 module "elb" {
-  source = "../../elb"
+  source = "../../elb/internal"
 
   name            = "${var.task_name}"
   port            = "${var.port}"
