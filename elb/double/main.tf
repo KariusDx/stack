@@ -124,6 +124,7 @@ resource "aws_route53_record" "external" {
 module "internal_elb" {
   source = "../../elb/internal"
 
+  protocol           = "http"
   name               = "${var.name}-internal"
   port               = "${var.port}"
   environment        = "${var.environment}"
