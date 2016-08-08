@@ -82,10 +82,6 @@ variable "iam_role" {
   description = "IAM Role ARN to use"
 }
 
-variable "zone_id" {
-  description = "The zone ID to create the record in"
-}
-
 variable "deployment_maximum_percent" {
   description = "The zone ID to create the record in"
   default = 200
