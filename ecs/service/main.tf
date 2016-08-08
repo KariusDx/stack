@@ -45,6 +45,11 @@ variable "dns_name" {
   description = "The DNS name to use, e.g nginx"
 }
 
+variable "zone_id" {
+  description = "Route53 zone ID to use for dns_name"
+}
+
+
 variable "log_bucket" {
   description = "The S3 bucket ID to use for the ELB"
 }

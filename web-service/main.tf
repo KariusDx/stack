@@ -36,11 +36,20 @@ variable "version" {
 }
 
 variable "subnet_ids" {
-  description = "Comma separated list of subnet IDs that will be passed to the ELB module"
+  description = "Comma separated list of subnet IDs used by the external ELB"
 }
 
+variable "internal_subnet_ids" {
+  description = "Comma separated list of subnet IDs used by the internal ELB"
+}
+
+
 variable "security_groups" {
-  description = "Comma separated list of security group IDs that will be passed to the ELB module"
+  description = "Comma separated list of security group IDs for the external ELB"
+}
+
+variable "internal_security_groups" {
+  description = "Comma separated list of security group IDs for the internal ELB"
 }
 
 variable "port" {
@@ -145,7 +154,9 @@ module "ecs_web_service" {
   source = "../ecs/web-service"
   environment = "${var.environment}"
   subnet_ids = "${var.subnet_ids}"
+  internal_subnet_ids = "${var.internal_subnet_ids}"
   security_groups = "${var.security_groups}"
+  internal_security_groups = "${var.internal_security_groups}"
   port = "${var.port}"
   cluster = "${var.cluster}"
   log_bucket = "${var.log_bucket}"
@@ -193,23 +204,23 @@ EOF
  */
 
 // The name of the ELB
-output "name" {
-  value = "${module.ecs_web_service.elb_name}"
+output "elb_external_name" {
+  value = "${module.ecs_web_service.elb_external_name}"
 }
 
 // The DNS name of the ELB
-output "dns" {
-  value = "${module.ecs_web_service.elb_dns}"
+output "external_dns" {
+  value = "${module.ecs_web_service.elb_external_dns}"
 }
 
 // The id of the ELB
-output "elb" {
-  value = "${module.ecs_web_service.elb_id}"
+output "elb_external" {
+  value = "${module.ecs_web_service.elb_external_id}"
 }
 
 // The zone id of the ELB
-output "zone_id" {
-  value = "${module.ecs_web_service.elb_zone_id}"
+output "external_zone_id" {
+  value = "${module.ecs_web_service.elb_external_zone_id}"
 }
 
 // FQDN built using the zone domain and name (external)

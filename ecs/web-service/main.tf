@@ -3,11 +3,20 @@ variable "environment" {
 }
 
 variable "subnet_ids" {
-  description = "Comma separated list of subnet IDs that will be passed to the ELB module"
+  description = "Comma separated list of subnet IDs used by the external ELB"
 }
 
+variable "internal_subnet_ids" {
+  description = "Comma separated list of subnet IDs used by the internal ELB"
+}
+
+
 variable "security_groups" {
-  description = "Comma separated list of security group IDs that will be passed to the ELB module"
+  description = "Comma separated list of security group IDs for the external ELB"
+}
+
+variable "internal_security_groups" {
+  description = "Comma separated list of security group IDs for the internal ELB"
 }
 
 variable "port" {
@@ -97,7 +106,7 @@ resource "aws_ecs_service" "main" {
   iam_role        = "${var.iam_role}"
 
   load_balancer {
-    elb_name       = "${module.elb.id}"
+    elb_name       = "${module.elb.internal_id}"
     container_name = "${var.task_name}"
     container_port = "${var.container_port}"
   }
@@ -118,9 +127,11 @@ module "elb" {
   port               = "${var.port}"
   environment        = "${var.environment}"
   subnet_ids         = "${var.subnet_ids}"
+  internal_subnet_ids = "${var.internal_subnet_ids}"
   healthcheck        = "${var.healthcheck}"
   log_bucket         = "${var.log_bucket}"
   security_groups    = "${var.security_groups}"
+  internal_security_groups  = "${var.internal_security_groups}"
 
   external_dns_name  = "${coalesce(var.external_dns_name, var.task_name)}"
   internal_dns_name  = "${coalesce(var.internal_dns_name, var.task_name)}"
@@ -130,23 +141,23 @@ module "elb" {
   stack_name         = "${var.stack_name}"
 }
 
-output "elb_name" {
-  value = "${module.elb.name}"
+output "elb_external_name" {
+  value = "${module.elb.external_name}"
 }
 
 // The DNS name of the ELB
-output "elb_dns" {
-  value = "${module.elb.dns}"
+output "elb_external_dns" {
+  value = "${module.elb.external_dns}"
 }
 
 // The id of the ELB
-output "elb_id" {
-  value = "${module.elb.id}"
+output "elb_external_id" {
+  value = "${module.elb.external_id}"
 }
 
 // The zone id of the ELB
-output "elb_zone_id" {
-  value = "${module.elb.zone_id}"
+output "elb_external_zone_id" {
+  value = "${module.elb.external_zone_id}"
 }
 
 // FQDN built using the zone domain and name (external)
