@@ -175,7 +175,7 @@ output "name" {
 
 // The DNS name of the ELB
 output "dns" {
-  value = "${module.ecs_service.elb.dns}"
+  value = "${module.ecs_service.elb_dns}"
 }
 
 // The id of the ELB
