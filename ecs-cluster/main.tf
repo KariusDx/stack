@@ -45,6 +45,11 @@ variable "subnet_ids" {
   description = "Comma separated list of subnet IDs"
 }
 
+variable "load_balancers" {
+  description = "Comma separated list of load balancer names to add to the ASG"
+  default = ""
+}
+
 variable "key_name" {
   description = "SSH key name to use"
 }
@@ -203,7 +208,45 @@ resource "aws_launch_configuration" "main" {
   }
 }
 
-resource "aws_autoscaling_group" "main" {
+resource "aws_autoscaling_group" "no_elb" {
+  count = "${replace(replace(var.load_balancers, "/.+/", 0), "", 1)}"
+  name = "${var.name}-${var.environment}"
+
+  availability_zones   = ["${split(",", var.availability_zones)}"]
+  vpc_zone_identifier  = ["${split(",", var.subnet_ids)}"]
+  launch_configuration = "${aws_launch_configuration.main.id}"
+  min_size             = "${var.min_size}"
+  max_size             = "${var.max_size}"
+  desired_capacity     = "${var.desired_capacity}"
+  termination_policies = ["OldestLaunchConfiguration", "Default"]
+  load_balancers       = ["${split(",", var.load_balancers)}"]
+
+  tag {
+    key                 = "Name"
+    value               = "${var.name}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Cluster"
+    value               = "${var.name} ${var.environment}"
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Environment"
+    value               = "${var.environment}"
+    propagate_at_launch = true
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+// same as above, but has load_balancers
+resource "aws_autoscaling_group" "elb" {
+  count = "${replace(replace(var.load_balancers, "/.+/", 1), "", 0)}"
   name = "${var.name}-${var.environment}"
 
   availability_zones   = ["${split(",", var.availability_zones)}"]
@@ -242,7 +285,7 @@ resource "aws_autoscaling_policy" "scale_up" {
   scaling_adjustment     = 1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
-  autoscaling_group_name = "${aws_autoscaling_group.main.name}"
+  autoscaling_group_name = "${coalesce(aws_autoscaling_group.no_elb.name, aws_autoscaling_group.elb.name)}"
 
   lifecycle {
     create_before_destroy = true
@@ -254,7 +297,7 @@ resource "aws_autoscaling_policy" "scale_down" {
   scaling_adjustment     = -1
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
-  autoscaling_group_name = "${aws_autoscaling_group.main.name}"
+  autoscaling_group_name = "${coalesce(aws_autoscaling_group.no_elb.name, aws_autoscaling_group.elb.name)}"
 
   lifecycle {
     create_before_destroy = true
@@ -367,7 +410,7 @@ output "name" {
 }
 
 output "autoscaling_group_name" {
-  value = "${aws_autoscaling_group.main.name}"
+  value = "${coalesce(aws_autoscaling_group.no_elb.name, aws_autoscaling_group.elb.name)}"
 }
 
 // The cluster security group ID.
