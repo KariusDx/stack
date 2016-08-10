@@ -17,6 +17,11 @@ variable "name" {
   description = "the name of your stack, e.g. \"segment\""
 }
 
+variable "log_bucket_suffix" {
+  description = "append this to the log bucket nme"
+  default = ""
+}
+
 variable "environment" {
   description = "the name of your environment, e.g. \"prod-west\""
 }
@@ -186,6 +191,7 @@ module "dns" {
 module "s3_logs" {
   source      = "./s3-logs"
   name        = "${var.name}"
+  suffix      = "${var.log_bucket_suffix}"
   environment = "${var.environment}"
   account_id  = "${module.defaults.s3_logs_account_id}"
   stack_name  = "${var.name}"

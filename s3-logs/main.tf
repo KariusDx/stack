@@ -1,6 +1,8 @@
 variable "name" {
 }
 
+variable "suffix" { default = "" }
+
 variable "environment" {
 }
 
@@ -17,16 +19,16 @@ resource "template_file" "policy" {
   template = "${file("${path.module}/policy.json")}"
 
   vars = {
-    bucket     = "${var.name}-${var.environment}-logs"
+    bucket     = "${var.name}-${var.environment}-logs${var.suffix}"
     account_id = "${var.account_id}"
   }
 }
 
 resource "aws_s3_bucket" "logs" {
-  bucket = "${var.name}-${var.environment}-logs"
+  bucket = "${var.name}-${var.environment}-logs${var.suffix}"
 
   tags {
-    Name        = "${var.name}-${var.environment}-logs"
+    Name        = "${var.name}-${var.environment}-logs${var.suffix}"
     Environment = "${var.environment}"
     Terraform   = "${var.stack_name}"
   }
