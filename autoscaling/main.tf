@@ -130,8 +130,24 @@ variable "load_balancers" {
   default = []
 }
 
-resource "aws_security_group" "cluster" {
-  name        = "${var.name}-${var.environment}-ecs-cluster"
+resource "aws_security_group" "cluster_member" {
+  name        = "${var.name}-${var.environment}-ecs-cluster-member"
+  vpc_id      = "${var.vpc_id}"
+  description = "Tags cluster membership in the ${var.name} ${var.environment} ECS cluster"
+
+  tags {
+    Name        = "ECS cluster ${var.name}-${var.environment} membership"
+    Environment = "${var.environment}"
+    Terraform   = "${var.stack_name}"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_security_group" "cluster_access" {
+  name        = "${var.name}-${var.environment}-ecs-cluster-access"
   vpc_id      = "${var.vpc_id}"
   description = "Allows traffic from and to the EC2 instances of the ${var.name} ${var.environment} ECS cluster"
 
@@ -150,7 +166,7 @@ resource "aws_security_group" "cluster" {
   }
 
   tags {
-    Name        = "ECS cluster (${var.name} ${var.environment})"
+    Name        = "ECS cluster ${var.name}-${var.environment} access"
     Environment = "${var.environment}"
     Terraform   = "${var.stack_name}"
   }
@@ -185,7 +201,7 @@ resource "aws_launch_configuration" "main" {
   ebs_optimized               = "${var.instance_ebs_optimized}"
   iam_instance_profile        = "${var.iam_instance_profile}"
   key_name                    = "${var.key_name}"
-  security_groups             = ["${aws_security_group.cluster.id}"]
+  security_groups             = ["${aws_security_group.cluster_access.id}","${aws_security_group.cluster_member.id}"]
   user_data                   = "${template_file.cloud_config.rendered}"
   associate_public_ip_address = "${var.associate_public_ip_address}"
 
@@ -346,5 +362,5 @@ output "autoscaling_group_name" {
 
 // The cluster security group ID.
 output "security_group_id" {
-  value = "${aws_security_group.cluster.id}"
+  value = "${aws_security_group.cluster_member.id}"
 }
