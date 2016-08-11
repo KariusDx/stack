@@ -105,20 +105,21 @@ module "security_groups" {
   environment = "${var.environment}"
   cidr        = "${var.cidr}"
   stack_name  = "${var.name}"
-  external_security_group = "${var.external_security_group}"
+  can_internal_ssh_security_groups = ["${split(",", module.bastion.can-internal-ssh)}"]
 }
 
 module "bastion" {
   source          = "./bastion"
   region          = "${var.region}"
   instance_type   = "${var.bastion_instance_type}"
-  security_groups = "${module.security_groups.external_ssh},${module.security_groups.internal_ssh}"
   vpc_id          = "${module.vpc.id}"
   subnet_id       = "${element(split(",",module.vpc.external_subnets), 0)}"
   key_name        = "${var.key_name}"
   environment     = "${var.environment}"
   stack_name      = "${var.name}"
   ami_id          = "${var.bastion_ami_id}"
+  external_security_group = "${var.external_security_group}"
+  cidr        = "${var.cidr}"
 }
 
 module "dhcp" {
@@ -161,11 +162,6 @@ output "zone_id" {
 // Security group for internal ELBs.
 output "internal_elb" {
   value = "${module.security_groups.internal_elb}"
-}
-
-// Security group for external ELBs.
-output "external_elb" {
-  value = "${module.security_groups.external_elb}"
 }
 
 output "internal_ssh" {
