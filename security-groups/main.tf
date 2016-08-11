@@ -52,7 +52,7 @@ resource "aws_security_group" "internal_elb" {
   }
 
   tags {
-    Name        = "${format("%s internal elb", var.name)}"
+    Name        = "${format("%s-%s internal elb", var.name, var.environment)}"
     Environment = "${var.environment}"
     Terraform   = "${var.stack_name}"
   }
@@ -75,7 +75,7 @@ resource "aws_security_group" "internal_ssh" {
   }
 
   tags {
-    Name        = "${format("%s bastion ssh", var.name)}"
+    Name        = "${format("%s-%s bastion ssh", var.name, var.environment)}"
     Environment = "${var.environment}"
     Terraform   = "${var.stack_name}"
   }
