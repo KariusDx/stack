@@ -90,6 +90,14 @@ resource "aws_iam_role_policy" "default_ecs_instance_role_policy" {
         "logs:DescribeLogStreams"
       ],
       "Resource": "arn:aws:logs:*:*:*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+          "iam:PassRole",
+          "iam:ListInstanceProfiles"
+        ],
+        "Resource": "*"
     }
   ]
 }
