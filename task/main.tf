@@ -62,6 +62,11 @@ variable "memory" {
   default     = 512
 }
 
+variable "task_role_arn" {
+  description = "The task role arn for the container"
+  default     = ""
+}
+
 variable "logDriver" {
   description = "The ECS logDriver"
   default     = "journald"
@@ -99,6 +104,8 @@ resource "aws_ecs_task_definition" "main" {
     ignore_changes        = ["image"]
     create_before_destroy = true
   }
+
+  task_role_arn = "${var.task_role_arn}"
 
   container_definitions = <<EOF
 [
