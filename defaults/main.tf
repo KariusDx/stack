@@ -24,7 +24,7 @@ variable "cidr" {
 
 variable "default_ecs_ami" {
   default = {
-    us-east-1      = "ami-5f3ff932"
+    us-east-1      = "ami-04980213"
     us-west-1      = "ami-31c08551"
     us-west-2      = "ami-f3985d93"
     eu-west-1      = "ami-ab4bd5d8"
