@@ -1,0 +1,29 @@
+#!/bin/bash
+set -o pipefail
+set -o errexit
+set -u
+
+function curl_as () {
+  curl -sL "$2" -o "$1" || (wget "$2" && mv "$(basename "$2")" "$1")
+}
+
+function install_zip () {
+  curl_as zipped "$2"
+  unzip zipped
+
+  # there are many different conventions for archives
+  if test -d "$1"* ; then
+      mv "$1*/$1" /usr/local/bin
+      rm -r "$1"
+  else
+      if test -d "$1" ; then
+        mv "$1/$1" /usr/local/bin
+        rmdir "$1"
+      else
+        mv "$1" /usr/local/bin
+      fi
+  fi
+  rm zipped
+}
+
+install_zip "$@"
