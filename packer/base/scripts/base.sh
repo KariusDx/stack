@@ -35,7 +35,11 @@ apt-get install -y \
         ntp \
         logrotate \
         dhcping \
-        dhcpdump
+        dhcpdump \
+        tmpreaper
+
+echo 'SHOW_WARNING=true' >> /etc/tmpreaper.conf
+echo 'TMPREAPER_TIME=1d' >> /etc/tmpreaper.conf
 
 pip install awscli
 
