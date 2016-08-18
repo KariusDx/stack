@@ -100,6 +100,10 @@ variable "task_arn" {
   description = "ecs task arn"
 }
 
+variable "elb_idle_timeout" {
+  default = 30
+}
+
 /**
  * Resources.
  */
@@ -138,6 +142,7 @@ module "elb" {
   protocol        = "${var.protocol}"
   zone_id         = "${var.zone_id}"
   log_bucket      = "${var.log_bucket}"
+  idle_timeout    = "${var.elb_idle_timeout}"
 }
 
 /**

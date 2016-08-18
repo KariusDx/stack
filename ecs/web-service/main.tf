@@ -98,6 +98,10 @@ variable "task_arn" {
   description = "ecs task arn"
 }
 
+variable "elb_idle_timeout" {
+  default = 30
+}
+
 resource "aws_ecs_service" "main" {
   name            = "${var.task_name}"
   cluster         = "${var.cluster}"
@@ -139,6 +143,7 @@ module "elb" {
   internal_zone_id   = "${var.internal_zone_id}"
   ssl_certificate_id = "${var.ssl_certificate_id}"
   stack_name         = "${var.stack_name}"
+  idle_timeout       = "${var.elb_idle_timeout}"
 }
 
 output "elb_external_name" {

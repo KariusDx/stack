@@ -64,6 +64,10 @@ variable "stack_name" {
   default     = ""
 }
 
+variable "idle_timeout" {
+  default = 30
+}
+
 /**
  * Resources.
  */
@@ -76,7 +80,7 @@ resource "aws_elb" "external" {
   subnets                   = ["${split(",", var.subnet_ids)}"]
   security_groups           = ["${split(",",var.security_groups)}"]
 
-  idle_timeout                = 30
+  idle_timeout                = "${var.idle_timeout}"
   connection_draining         = true
   connection_draining_timeout = 15
 
@@ -136,6 +140,7 @@ module "internal_elb" {
   dns_name           = "${coalesce(var.internal_dns_name, var.name)}"
   zone_id            = "${var.internal_zone_id}"
   stack_name         = "${var.stack_name}"
+  idle_timeout       = "${var.idle_timeout}"
 }
 
 /**

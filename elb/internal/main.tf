@@ -49,6 +49,9 @@ variable "stack_name" {
   default     = ""
 }
 
+variable "idle_timeout" {
+  default = 30
+}
 
 /**
  * Resources.
@@ -62,7 +65,7 @@ resource "aws_elb" "main" {
   subnets                   = ["${split(",", var.subnet_ids)}"]
   security_groups           = ["${split(",",var.security_groups)}"]
 
-  idle_timeout                = 30
+  idle_timeout                = "${var.idle_timeout}"
   connection_draining         = true
   connection_draining_timeout = 15
 
