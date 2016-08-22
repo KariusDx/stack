@@ -121,15 +121,18 @@ resource "aws_route_table" "internal" {
   count  = "${length(compact(split(",", var.internal_subnets)))}"
   vpc_id = "${aws_vpc.main.id}"
 
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = "${element(aws_nat_gateway.main.*.id, count.index)}"
-  }
-
   tags {
     Name = "${var.name}-${var.environment}-${format("internal-%03d", count.index+1)}"
     Terraform = "${var.stack_name}"
   }
+}
+
+resource "aws_route" "nat_external" {
+  count  = "${length(compact(split(",", var.internal_subnets)))}"
+  route_table_id = "${element(aws_route_table.internal.*.id, count.index)}"
+
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id = "${element(aws_nat_gateway.main.*.id, count.index)}"
 }
 
 /**
@@ -175,4 +178,8 @@ output "security_group" {
 // The list of availability zones of the VPC.
 output "availability_zones" {
   value = "${join(",", aws_subnet.external.*.availability_zone)}"
+}
+
+output "internal_route_table_ids" {
+  value = ["${aws_route_table.internal.*.id}"]
 }
