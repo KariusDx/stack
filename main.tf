@@ -213,6 +213,10 @@ output "vpc_id" {
   value = "${module.vpc.id}"
 }
 
+output "vpc_internal_route_table_ids" {
+  value = "${module.vpc.internal_route_table_ids}"
+}
+
 output "external_security_group" {
   value = "${var.external_security_group}"
 }
