@@ -33,20 +33,6 @@ resource "aws_security_group" "internal_elb" {
   vpc_id      = "${var.vpc_id}"
   description = "Allows internal ELB traffic"
 
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["${var.cidr}"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = -1
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   lifecycle {
     create_before_destroy = true
   }
@@ -56,6 +42,24 @@ resource "aws_security_group" "internal_elb" {
     Environment = "${var.environment}"
     Terraform   = "${var.stack_name}"
   }
+}
+
+resource "aws_security_group_rule" "internal_elb_http" {
+    type = "ingress"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["${var.cidr}"]
+    security_group_id = "${aws_security_group.internal_elb.id}"
+}
+
+resource "aws_security_group_rule" "internal_elb_egress" {
+    type = "egress"
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 0
+    security_group_id = "${aws_security_group.internal_elb.id}"
 }
 
 resource "aws_security_group" "internal_ssh" {
