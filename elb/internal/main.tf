@@ -58,7 +58,7 @@ variable "idle_timeout" {
  */
 
 resource "aws_elb" "main" {
-  name = "${var.name}"
+  name = "${var.name}-${var.environment}"
 
   internal                  = true
   cross_zone_load_balancing = true
@@ -89,7 +89,7 @@ resource "aws_elb" "main" {
   }
 
   tags {
-    Name        = "${var.name}-balancer"
+    Name        = "${var.name}-${var.environment}-balancer"
     Service     = "${var.name}"
     Environment = "${var.environment}"
     Terraform   = "${var.stack_name}"
