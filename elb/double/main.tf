@@ -152,6 +152,10 @@ output "external_name" {
   value = "${aws_elb.external.name}"
 }
 
+output "internal_name" {
+  value = "${module.internal_elb.name}"
+}
+
 // The external ELB ID.
 output "external_id" {
   value = "${aws_elb.external.id}"
@@ -175,6 +179,10 @@ output "external_fqdn" {
 // FQDN built using the zone domain and name (internal)
 output "internal_fqdn" {
   value = "${module.internal_elb.fqdn}"
+}
+
+output "internal_dns" {
+  value = "${module.internal_elb.dns}"
 }
 
 // The zone id of the ELB

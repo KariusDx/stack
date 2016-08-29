@@ -150,9 +150,18 @@ output "elb_external_name" {
   value = "${module.elb.external_name}"
 }
 
+output "elb_internal_name" {
+  value = "${module.elb.internal_name}"
+}
+
 // The DNS name of the ELB
 output "elb_external_dns" {
   value = "${module.elb.external_dns}"
+}
+
+// The DNS name of the ELB
+output "elb_internal_dns" {
+  value = "${module.elb.internal_dns}"
 }
 
 // The id of the ELB
