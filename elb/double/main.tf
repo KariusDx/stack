@@ -36,6 +36,14 @@ variable "healthcheck" {
   description = "Healthcheck path"
 }
 
+variable "healthcheck_timeout" {
+  default = 5
+}
+
+variable "healthcheck_interval" {
+  default = 30
+}
+
 variable "log_bucket" {
   description = "S3 bucket name to write ELB logs into"
 }
@@ -134,6 +142,8 @@ module "internal_elb" {
   environment        = "${var.environment}"
   subnet_ids         = "${var.internal_subnet_ids}"
   healthcheck        = "${var.healthcheck}"
+  healthcheck_timeout  = "${var.healthcheck_timeout}"
+  healthcheck_interval = "${var.healthcheck_interval}"
   log_bucket         = "${var.log_bucket}"
   security_groups    = "${var.internal_security_groups}"
 

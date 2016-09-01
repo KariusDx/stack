@@ -53,6 +53,14 @@ variable "idle_timeout" {
   default = 30
 }
 
+variable "healthcheck_timeout" {
+  default = 5
+}
+
+variable "healthcheck_interval" {
+  default = 30
+}
+
 /**
  * Resources.
  */
@@ -79,9 +87,9 @@ resource "aws_elb" "main" {
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
-    timeout             = 5
+    timeout             = "${var.healthcheck_timeout}"
     target              = "${var.protocol}:${var.port}${var.healthcheck}"
-    interval            = 30
+    interval            = "${var.healthcheck_interval}"
   }
 
   access_logs {

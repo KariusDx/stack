@@ -66,6 +66,14 @@ variable "healthcheck" {
   default     = "/"
 }
 
+variable "healthcheck_interval" {
+  default = 30
+}
+
+variable "healthcheck_timeout" {
+  default = 5
+}
+
 variable "container_port" {
   description = "The container port"
   default     = 3000
@@ -133,6 +141,8 @@ module "elb" {
   subnet_ids         = "${var.subnet_ids}"
   internal_subnet_ids = "${var.internal_subnet_ids}"
   healthcheck        = "${var.healthcheck}"
+  healthcheck_interval = "${var.healthcheck_interval}"
+  healthcheck_timeout = "${var.healthcheck_timeout}"
   log_bucket         = "${var.log_bucket}"
   security_groups    = "${var.security_groups}"
   internal_security_groups  = "${var.internal_security_groups}"
