@@ -154,6 +154,11 @@ output "bastion_ip" {
   value = "${module.bastion.external_ip}"
 }
 
+// The bastion host IP.
+output "bastion_instance_id" {
+  value = "${module.bastion.instance_id}"
+}
+
 // The internal route53 zone ID.
 output "zone_id" {
   value = "${module.dns.zone_id}"
