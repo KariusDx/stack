@@ -100,14 +100,13 @@ resource "aws_elb" "external" {
     ssl_certificate_id = "${var.ssl_certificate_id}"
   }
 
-  # The internal ELB will do a health check
-  #health_check {
-  #  healthy_threshold   = 2
-  #  unhealthy_threshold = 2
-  #  timeout             = 5
-  #  target              = "HTTP:${var.port}${var.healthcheck}"
-  #  interval            = 30
-  #}
+  health_check {
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = "${var.healthcheck_timeout}"
+    target              = "HTTP:${var.port}${var.healthcheck}"
+    interval            = "${var.healthcheck_interval}"
+  }
 
   access_logs {
     bucket = "${var.log_bucket}"
