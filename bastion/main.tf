@@ -53,7 +53,6 @@ variable "stack_name" {
 
 variable "ami_id" {
   description = "ami id to use for the bastion host"
-  default     = ""
 }
 
 variable "external_security_group" {
@@ -64,12 +63,14 @@ variable "cidr" {
   description = "The cidr block to use for internal security groups"
 }
 
+/*
 module "ami" {
   source        = "github.com/terraform-community-modules/tf_aws_ubuntu_ami/ebs"
   region        = "${var.region}"
   distribution  = "trusty"
   instance_type = "${var.instance_type}"
 }
+*/
 
 resource "aws_security_group" "can-internal-ssh" {
   name        = "${format("%s-%s-can-internal-ssh", var.stack_name, var.environment)}"
@@ -88,7 +89,7 @@ resource "aws_security_group" "can-internal-ssh" {
 }
 
 resource "aws_instance" "bastion" {
-  ami                    = "${coalesce(var.ami_id, module.ami.ami_id)}"
+  ami                    = "${var.ami_id}"
   source_dest_check      = false
   instance_type          = "${var.instance_type}"
   subnet_id              = "${var.subnet_id}"
