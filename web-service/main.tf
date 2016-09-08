@@ -172,7 +172,7 @@ module "ecs_web_service" {
   deployment_minimum_healthy_percent = "${var.deployment_minimum_healthy_percent}"
   stack_name = "${var.stack_name}"
   task_name = "${module.task.name}"
-  task_arn  = "${module.task.arn}"
+  task_definition  = "${module.task.arn}"
   security_groups = "${var.security_groups}"
 }
 

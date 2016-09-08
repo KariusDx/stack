@@ -102,8 +102,8 @@ variable "task_name" {
   description = "ecs task name"
 }
 
-variable "task_arn" {
-  description = "ecs task arn"
+variable "task_definition" {
+  description = "ecs task definition"
 }
 
 variable "elb_idle_timeout" {
@@ -113,7 +113,7 @@ variable "elb_idle_timeout" {
 resource "aws_ecs_service" "main" {
   name            = "${var.task_name}"
   cluster         = "${var.cluster}"
-  task_definition = "${var.task_arn}"
+  task_definition = "${var.task_definition}"
   desired_count   = "${var.desired_count}"
   iam_role        = "${var.iam_role}"
 
