@@ -46,10 +46,6 @@ variable "subnet_id" {
   description = "A external subnet id"
 }
 
-variable "environment" {
-  description = "Environment tag, e.g prod"
-}
-
 variable "stack_name" {
   description = "stack name to use as the value for the Terraform tag and in the security group name"
   default     = ""
