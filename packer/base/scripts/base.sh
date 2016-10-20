@@ -38,7 +38,9 @@ apt-get install -y \
         dhcpdump \
         tmpreaper
 
-echo 'SHOW_WARNING=true' >> /etc/tmpreaper.conf
+mv /etc/tmpreaper.conf /etc/tmpreaper.conf.tmp
+grep -v SHOW_WARNING > /etc/tmpreaper.conf < /etc/tmpreaper.conf.tmp
+rm /etc/tmpreaper.conf.tmp
 echo 'TMPREAPER_TIME=1d' >> /etc/tmpreaper.conf
 
 pip install awscli
