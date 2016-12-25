@@ -3,3 +3,16 @@ base: base
 
 scripts:
   - ecs.sh
+
+execute: "echo ubuntu | {{ .Vars }} sudo -E -S sh '{{ .Path }}'"
+
+provisioners:
+  - type: "file"
+    source: "scripts/docker-clean.sh"
+    destination: "/etc/cron.daily/docker-clean.sh"
+
+  - type: "shell"
+    execute_command: "echo 'packer' | {{ .Vars }} sudo -E -S sh '{{ .Path }}'"
+    inline:
+      - "set -eu"
+      - "chmod +x /etc/cron-daily/docker-clean.sh"
