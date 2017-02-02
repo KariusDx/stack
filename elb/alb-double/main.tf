@@ -107,7 +107,7 @@ resource "aws_alb_target_group" "service" {
   name     = "${var.name}-${var.environment}-ext-target"
   port     = 443
   protocol = "HTTPS"
-  vpc_id   = "${vpc_id}"
+  vpc_id   = "${var.vpc_id}"
 
   health_check {
     healthy_threshold   = 2
@@ -171,7 +171,7 @@ resource "aws_alb_target_group" "internal-service" {
   name     = "${var.name}-${var.environment}-int-target"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = "${vpc_id}"
+  vpc_id   = "${var.vpc_id}"
 
   health_check {
     healthy_threshold   = 2
