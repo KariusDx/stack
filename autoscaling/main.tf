@@ -130,6 +130,12 @@ variable "load_balancers" {
   default = []
 }
 
+variable "target_group_arns" {
+  description = "load balancer target group names to add to the ASG"
+  type    = "list"
+  default = []
+}
+
 resource "aws_security_group" "cluster_member" {
   name        = "${var.name}-${var.environment}-ecs-cluster-member"
   vpc_id      = "${var.vpc_id}"
@@ -226,7 +232,7 @@ resource "aws_launch_configuration" "main" {
 resource "aws_autoscaling_group" "main" {
   name = "${var.name}-${var.environment}"
   load_balancers = ["${var.load_balancers}"]
-
+  target_group_arns    = ["${var.target_group_arns}"]
   availability_zones   = ["${split(",", var.availability_zones)}"]
   vpc_zone_identifier  = ["${split(",", var.subnet_ids)}"]
   launch_configuration = "${aws_launch_configuration.main.id}"
