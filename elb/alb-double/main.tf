@@ -104,7 +104,7 @@ resource "aws_alb" "external" {
 }
 
 resource "aws_alb_target_group" "service" {
-  name     = "${var.name}-${var.environment}-external-target"
+  name     = "${var.name}-${var.environment}-ext-target"
   port     = 443
   protocol = "HTTPS"
   vpc_id   = "${vpc_id}"
@@ -168,7 +168,7 @@ resource "aws_route53_record" "external" {
 }
 
 resource "aws_alb_target_group" "internal-service" {
-  name     = "${var.name}-${var.environment}-internal-target"
+  name     = "${var.name}-${var.environment}-int-target"
   port     = 80
   protocol = "HTTP"
   vpc_id   = "${vpc_id}"
