@@ -106,7 +106,7 @@ resource "aws_alb" "external" {
 resource "aws_alb_target_group" "service" {
   name     = "${var.name}-${var.environment}-ext-target"
   port     = "${var.port}"
-  protocol = "HTTPS"
+  protocol = "HTTP"
   vpc_id   = "${var.vpc_id}"
 
   health_check {
