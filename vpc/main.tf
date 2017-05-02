@@ -106,15 +106,16 @@ resource "aws_subnet" "external" {
 resource "aws_route_table" "external" {
   vpc_id = "${aws_vpc.main.id}"
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = "${aws_internet_gateway.main.id}"
-  }
-
   tags {
     Name = "${var.name}-${var.environment}-external-001"
     Terraform = "${var.stack_name}"
   }
+}
+
+resource "aws_route" "external" {
+  route_table_id         = "${aws_route_table.external.id}"
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = "${aws_internet_gateway.main.id}"
 }
 
 resource "aws_route_table" "internal" {
