@@ -227,6 +227,10 @@ output "vpc_internal_route_table_ids" {
   value = "${module.vpc.internal_route_table_ids}"
 }
 
+output "vpc_external_route_table_ids" {
+  value = "${module.vpc.external_route_table_ids}"
+}
+
 output "external_security_group" {
   value = "${var.external_security_group}"
 }
