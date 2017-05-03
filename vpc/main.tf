@@ -193,3 +193,8 @@ output "availability_zones" {
 output "internal_route_table_ids" {
   value = ["${aws_route_table.internal.*.id}"]
 }
+
+output "external_route_table_ids" {
+  value = ["${aws_route_table.external.*.id}"]
+}
+
