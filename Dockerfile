@@ -1,7 +1,7 @@
 # Build as: docker build -t aws-stack .
 # Run as: docker run --rm -it --net=host \
 #    -v $PWD:$PWD -w $PWD \
-#    -v /tmp:/tmp -v ~/.aws:/root/.aws \
+#    -v /tmp:/tmp -v ~/.aws:/root/.aws:ro \
 #    -e AWS_DEFAULT_REGION=us-east-1 aws-stack make amis
 
 FROM python:3.5-slim

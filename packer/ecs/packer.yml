@@ -3,3 +3,5 @@ base: base
 
 scripts:
   - ecs.sh
+
+execute: "echo ubuntu | {{ .Vars }} sudo -E -S sh '{{ .Path }}'"
