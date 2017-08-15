@@ -63,6 +63,11 @@ variable "cidr" {
   description = "The cidr block to use for internal security groups"
 }
 
+variable "private_ip" {
+  description = "The private ip address to asssign to the bastion host"
+  default = ""
+}
+
 /*
 module "ami" {
   source        = "github.com/terraform-community-modules/tf_aws_ubuntu_ami/ebs"
@@ -97,6 +102,7 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids = ["${var.external_security_group}","${aws_security_group.can-internal-ssh.id}"]
   monitoring             = true
   user_data              = "${file(format("%s/user_data.sh", path.module))}"
+  private_ip             = "${var.private_ip}"
 
   tags {
     Name        = "bastion ${var.environment}"

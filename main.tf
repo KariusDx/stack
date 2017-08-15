@@ -76,6 +76,11 @@ variable "bastion_instance_type" {
   default = "t2.micro"
 }
 
+variable "bastion_private_ip" {
+  description = "Private IP address to assign to the bastion host"
+  default = ""
+}
+
 variable "bastion_ami_id" {
   description = "AMI id to use for the bastion host. Defaults to a standard Ubuntu AMI."
   default = ""
@@ -120,6 +125,7 @@ module "bastion" {
   ami_id          = "${var.bastion_ami_id}"
   external_security_group = "${var.external_security_group}"
   cidr        = "${var.cidr}"
+  private_ip      = "${var.bastion_private_ip}"
 }
 
 module "dhcp" {
