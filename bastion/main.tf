@@ -126,7 +126,7 @@ output "internal_ip" {
 }
 
 output "instance_id" {
-  value = "${aws_instance.bastion.id}"
+  value = "${coalesce(var.private_ip, aws_instance.bastion.id)}"
 }
 
 output "can-internal-ssh" {
