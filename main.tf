@@ -86,6 +86,11 @@ variable "bastion_ami_id" {
   default = ""
 }
 
+variable "bastion_iam_instance_profile" {
+  description = "IAM profile the bastion uses"
+  default = ""
+}
+
 module "defaults" {
   source = "./defaults"
   region = "${var.region}"
@@ -126,6 +131,7 @@ module "bastion" {
   external_security_group = "${var.external_security_group}"
   cidr        = "${var.cidr}"
   private_ip      = "${var.bastion_private_ip}"
+  iam_instance_profile = "${var.bastion_iam_instance_profile}"
 }
 
 module "dhcp" {
