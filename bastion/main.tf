@@ -64,7 +64,12 @@ variable "cidr" {
 }
 
 variable "private_ip" {
-  description = "The private ip address to asssign to the bastion host"
+  description = "The private ip address to assign to the bastion host"
+  default = ""
+}
+
+variable "iam_instance_profile" {
+  description = "The iam instance profile to assign to the bastion host"
   default = ""
 }
 
@@ -103,6 +108,7 @@ resource "aws_instance" "bastion" {
   monitoring             = true
   user_data              = "${file(format("%s/user_data.sh", path.module))}"
   private_ip             = "${var.private_ip}"
+  iam_instance_profile   = "${var.iam_instance_profile}"
 
   tags {
     Name        = "bastion ${var.environment}"
