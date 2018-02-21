@@ -106,6 +106,10 @@ output "arn" {
   value = "${aws_iam_role.default_ecs_role.arn}"
 }
 
+output "name" {
+  value = "${aws_iam_role.default_ecs_role.name}"
+}
+
 output "unique_id" {
   value = "${aws_iam_role.default_ecs_role.unique_id}"
 }
