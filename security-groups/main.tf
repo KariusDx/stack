@@ -29,7 +29,7 @@ variable "can_internal_ssh_security_groups" {
 
 
 resource "aws_security_group" "internal_elb" {
-  name        = "${format("%s-%s-internal-elb", var.name, var.environment)}"
+  name        = "${replace(format("%s-%s-internal-elb", var.name, var.environment), "/(.{0,32})(.*)/", "$1")}"
   vpc_id      = "${var.vpc_id}"
   description = "Allows internal ELB traffic"
 

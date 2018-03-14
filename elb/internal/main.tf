@@ -66,7 +66,7 @@ variable "healthcheck_interval" {
  */
 
 resource "aws_elb" "main" {
-  name = "${var.name}-${var.environment}"
+  name = "${replace("${var.name}-${var.environment}", "/(.{0,32})(.*)/", "$1")}"
 
   internal                  = true
   cross_zone_load_balancing = true
