@@ -186,6 +186,10 @@ output "internal_elb" {
   value = "${module.security_groups.internal_elb}"
 }
 
+output "can_internal_ssh" {
+  value = "${module.bastion.can-internal-ssh}"
+}
+
 output "internal_ssh" {
   value = "${module.security_groups.internal_ssh}"
 }
